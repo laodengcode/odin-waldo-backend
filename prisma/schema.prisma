@@ -1,0 +1,45 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model GameImage {
+  id         String      @id @default(cuid())
+  title      String
+  imageUrl   String
+  naturalW   Int
+  naturalH   Int
+  characters Character[]
+  createdAt  DateTime    @default(now())
+}
+
+model Character {
+  id          String    @id @default(cuid())
+  name        String
+  x_pct       Float
+  y_pct       Float
+  w_pct       Float
+  h_pct       Float
+  gameImage   GameImage @relation(fields: [gameImageId], references: [id])
+  gameImageId String
+  createdAt   DateTime  @default(now())
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  gameId    String
+  startAt   DateTime @default(now())
+  used      Boolean  @default(false)
+}
+
+model Score {
+  id         String   @id @default(cuid())
+  playerName String
+  timeMs     Int
+  gameId     String
+  createdAt  DateTime @default(now())
+}
