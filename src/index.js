@@ -10,9 +10,28 @@ import leaderboardRouter from "./routes/leaderboard.js";
 
 dotenv.config();
 const app = express();
-app.use(cors());
+
+// Allowed frontend origins
+const allowedOrigins = [
+  "http://localhost:5173", // Vite dev server
+  "https://waldofrontend.netlify.app" // production frontend
+];
+
+app.use(cors({
+  origin: function(origin, callback) {
+    if (!origin) return callback(null, true); // allow mobile apps or curl requests with no origin
+    if (allowedOrigins.indexOf(origin) === -1) {
+      const msg = `The CORS policy for this site does not allow access from the specified Origin: ${origin}`;
+      return callback(new Error(msg), false);
+    }
+    return callback(null, true);
+  },
+  credentials: true
+}));
+
 app.use(express.json());
 
+// Routes
 app.use("/api/games", gameRouter);
 app.use("/api/session", sessionRouter);
 app.use("/api/validate", validateRouter);
